@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WExporter.Entities", "WExporter.Entities\WExporter.Entities.csproj", "{33EBF4D7-D30F-453C-AB12-49DBC3969EC8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WExporter.DataAccess", "WExporter.DataAccess\WExporter.DataAccess.csproj", "{E22EF4E8-F699-49CD-850D-B7877E3CF4A8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WExporter.Business", "WExporter.Business\WExporter.Business.csproj", "{47E9D6F7-9042-425C-BCA3-FE41CCBFC3D9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{33EBF4D7-D30F-453C-AB12-49DBC3969EC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{33EBF4D7-D30F-453C-AB12-49DBC3969EC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{33EBF4D7-D30F-453C-AB12-49DBC3969EC8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E22EF4E8-F699-49CD-850D-B7877E3CF4A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E22EF4E8-F699-49CD-850D-B7877E3CF4A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E22EF4E8-F699-49CD-850D-B7877E3CF4A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E22EF4E8-F699-49CD-850D-B7877E3CF4A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47E9D6F7-9042-425C-BCA3-FE41CCBFC3D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47E9D6F7-9042-425C-BCA3-FE41CCBFC3D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47E9D6F7-9042-425C-BCA3-FE41CCBFC3D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47E9D6F7-9042-425C-BCA3-FE41CCBFC3D9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
