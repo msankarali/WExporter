@@ -64,18 +64,17 @@ namespace Core.DataAccess
             );
 
         TEntity Add(TEntity entity);
-        void Add(params TEntity[] entities);
-        void Add(IEnumerable<TEntity> entities);
+        int Add(params TEntity[] entities);
+        int Add(IEnumerable<TEntity> entities);
 
         (TEntity old, TEntity @new) Update(TEntity entity);
-        void Update(params TEntity[] entities);
-        (TEntity old, TEntity @new) Update(TEntity entity, params object[] keyValues);
-        void Update(IEnumerable<TEntity> entities);
+        int Update(params TEntity[] entities);
+        int Update(IEnumerable<TEntity> entities);
 
         TEntity Delete(TEntity entity);
-        void Delete(params TEntity[] entities);
-        void Delete(params object[] keyValues);
-        void Delete(IEnumerable<TEntity> entities);
+        int Delete(params TEntity[] entities);
+        int Delete(params object[] keyValues);
+        int Delete(IEnumerable<TEntity> entities);
 
         int Count(
             Expression<Func<TEntity, bool>> predicate = null,

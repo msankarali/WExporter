@@ -10,9 +10,9 @@ using System.Text;
 
 namespace Core.DataAccess.EntityFramework
 {
-    public class EfEntityRepositoryBase<TEntity, TContext> : IEntityRepository<TEntity>
+    public class EfEntityRepositoryBase<TEntity, TDbContext> : IEntityRepository<TEntity>
         where TEntity : class, IEntity, new()
-        where TContext : DbContext, new()
+        where TDbContext : DbContext, new()
     {
         public readonly DbContext _dbContext;
         public readonly DbSet<TEntity> _dbSet;
@@ -130,63 +130,66 @@ namespace Core.DataAccess.EntityFramework
 
         public TEntity Delete(TEntity entity)
         {
-            return _dbSet.Remove(entity).Entity;
+            var entityToDelete = _dbSet.Remove(entity).Entity;
+            _dbContext.SaveChanges();
+            return entityToDelete;
         }
 
-        public void Delete(params TEntity[] entities)
+        public int Delete(params TEntity[] entities)
         {
             _dbSet.RemoveRange(entities);
+            return _dbContext.SaveChanges();
         }
 
-        public void Delete(IEnumerable<TEntity> entities)
+        public int Delete(IEnumerable<TEntity> entities)
         {
             _dbSet.RemoveRange(entities);
+            return _dbContext.SaveChanges();
         }
 
-        public void Delete(params object[] keyValues)
+        public int Delete(params object[] keyValues)
         {
             TEntity entityToDelete = _dbSet.Find(keyValues);
             _dbSet.Remove(entityToDelete);
+            return _dbContext.SaveChanges();
         }
 
         public TEntity Add(TEntity entity)
         {
-            return _dbSet.Add(entity).Entity;
+            var entityToAdd = _dbSet.Add(entity).Entity;
+            _dbContext.SaveChanges();
+            return entityToAdd;
         }
 
-        public void Add(params TEntity[] entities)
+        public int Add(params TEntity[] entities)
         {
             _dbSet.AddRange(entities);
+            return _dbContext.SaveChanges();
         }
 
-        public void Add(IEnumerable<TEntity> entities)
+        public int Add(IEnumerable<TEntity> entities)
         {
             _dbSet.AddRange(entities);
+            return _dbContext.SaveChanges();
         }
 
         public (TEntity old, TEntity @new) Update(TEntity entity)
         {
-            return (entity, _dbSet.Update(entity).Entity);
+            var entityToUpdate = _dbSet.Update(entity).Entity;
+            _dbContext.SaveChanges();
+            return (entity, entityToUpdate);
         }
 
-        public void Update(params TEntity[] entities)
+        public int Update(params TEntity[] entities)
         {
             _dbSet.UpdateRange(entities);
+            return _dbContext.SaveChanges();
         }
 
-        public void Update(IEnumerable<TEntity> entities)
+        public int Update(IEnumerable<TEntity> entities)
         {
             _dbSet.UpdateRange(entities);
-        }
-
-        public (TEntity old, TEntity @new) Update(TEntity entity, params object[] keyValues)
-        {
-            var entityToUpdate = _dbSet.Find(keyValues);
-            if (entityToUpdate != null)
-            {
-                return (entity, _dbSet.Update(entity).Entity);
-            }
-            return default;
+            return _dbContext.SaveChanges();
         }
 
         public int Count(
