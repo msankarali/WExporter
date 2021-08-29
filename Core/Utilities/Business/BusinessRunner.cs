@@ -4,26 +4,32 @@ namespace Core.Utilities.Business
 {
     public class BusinessRunner
     {
-        public static IResult CheckAnyDifferent(ResultType resultType, params IResult[] logics)
+        public static IResult CheckDifferent(ResultType[] resultTypes, params IResult[] logics)
         {
             foreach (var logic in logics)
             {
-                if (resultType != logic.ResultType)
+                foreach (var resultType in resultTypes)
                 {
-                    return logic;
+                    if (resultType != logic.ResultType)
+                    {
+                        return logic;
+                    }
                 }
             }
 
             return null;
         }
 
-        public static IResult CheckAny(ResultType resultType, params IResult[] logics)
+        public static IResult CheckAny(ResultType[] resultTypes, params IResult[] logics)
         {
             foreach (var logic in logics)
             {
-                if (resultType == logic.ResultType)
+                foreach (var resultType in resultTypes)
                 {
-                    return logic;
+                    if (resultType == logic.ResultType)
+                    {
+                        return logic;
+                    }
                 }
             }
 
