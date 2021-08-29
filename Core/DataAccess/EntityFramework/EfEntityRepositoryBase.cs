@@ -12,7 +12,7 @@ namespace Core.DataAccess.EntityFramework
 {
     public class EfEntityRepositoryBase<TEntity, TDbContext> : IEntityRepository<TEntity>
         where TEntity : class, IEntity, new()
-        where TDbContext : DbContext, new()
+        where TDbContext : DbContext
     {
         public readonly DbContext _dbContext;
         public readonly DbSet<TEntity> _dbSet;
