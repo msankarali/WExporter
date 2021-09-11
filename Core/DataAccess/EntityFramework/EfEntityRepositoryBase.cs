@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 
 namespace Core.DataAccess.EntityFramework
 {
@@ -14,8 +15,8 @@ namespace Core.DataAccess.EntityFramework
         where TEntity : class, IEntity, new()
         where TDbContext : DbContext
     {
-        public readonly DbContext _dbContext;
-        public readonly DbSet<TEntity> _dbSet;
+        private readonly DbContext _dbContext;
+        private readonly DbSet<TEntity> _dbSet;
 
         public EfEntityRepositoryBase(DbContext dbContext)
         {
@@ -37,9 +38,9 @@ namespace Core.DataAccess.EntityFramework
             return query.FirstOrDefault();
         }
 
-        public TEntity Get<TResult>(
+        public TResult Get<TResult>(
+            Expression<Func<TEntity, TResult>> selector,
             Expression<Func<TEntity, bool>> predicate = null,
-            Expression<Func<TEntity, TResult>> selector = null,
             Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> include = null,
             bool ignoreQueryFilters = false,
             bool enableTracking = true)
@@ -48,18 +49,50 @@ namespace Core.DataAccess.EntityFramework
             if (!enableTracking) query.AsNoTracking();
             if (include != null) query = include(query);
             if (predicate != null) query = query.Where(predicate);
-            if (selector != null) query = (IQueryable<TEntity>)query.Select(selector).AsQueryable();
             if (ignoreQueryFilters) query = query.IgnoreQueryFilters();
-            return query.FirstOrDefault();
+            var entity = (TResult)Activator.CreateInstance(typeof(TResult));
+            entity = query.Select(selector).FirstOrDefault();
+            return entity;
         }
 
-        public IPagedList<TEntity> GetAllPaged<TResult>(
+        public TEntity Get(ISpecification<TEntity> specification = null)
+        {
+            return SpecificationEvaluator<TEntity>.GetQuery(_dbContext.Set<TEntity>().AsQueryable(), specification).FirstOrDefault();
+        }
+
+        public TResult Get<TResult>(Expression<Func<TEntity, TResult>> selector, ISpecification<TEntity> specification = null)
+        {
+            return SpecificationEvaluator<TEntity>.GetQuery(selector, _dbContext.Set<TEntity>().AsQueryable(), specification).FirstOrDefault();
+        }
+
+        public IPagedList<TEntity> GetAllPaged(ISpecification<TEntity> specification)
+        {
+            return SpecificationEvaluator<TEntity>.GetQuery(_dbContext.Set<TEntity>().AsQueryable(), specification)
+                .ToPagedList(
+                    specification.Configuration.PageSize,
+                    specification.Configuration.PageNumber);
+        }
+
+        public IPagedList<TResult> GetAllPaged<TResult>(Expression<Func<TEntity, TResult>> selector, ISpecification<TEntity> specification = null)
+        {
+            return SpecificationEvaluator<TEntity>.GetQuery(selector, _dbContext.Set<TEntity>().AsQueryable(), specification)
+                .ToPagedList(
+                    specification.Configuration.PageSize,
+                    specification.Configuration.PageNumber);
+        }
+
+        private IQueryable<TEntity> ApplySpecification(ISpecification<TEntity> spec)
+        {
+            return SpecificationEvaluator<TEntity>.GetQuery(_dbContext.Set<TEntity>().AsQueryable(), spec);
+        }
+
+        public IPagedList<TResult> GetAllPaged<TResult>(
+            Expression<Func<TEntity, TResult>> selector,
             Expression<Func<TEntity, bool>> predicate = null,
-            Expression<Func<TEntity, TResult>> selector = null,
             Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
             Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> include = null,
-            bool ignoreQueryFilters = false,
             bool enableTracking = true,
+            bool ignoreQueryFilters = false,
             int pageNumber = 0,
             int pageSize = 20)
         {
@@ -67,11 +100,9 @@ namespace Core.DataAccess.EntityFramework
             if (!enableTracking) query.AsNoTracking();
             if (include != null) query = include(query);
             if (predicate != null) query = query.Where(predicate);
-            if (selector != null) query = (IQueryable<TEntity>)query.Select(selector).AsQueryable();
             if (ignoreQueryFilters) query = query.IgnoreQueryFilters();
-            return orderBy != null
-                ? orderBy(query).ToPagedList(pageSize, pageNumber)
-                : query.ToPagedList(pageSize, pageNumber);
+            if (orderBy != null) query = orderBy(query);
+            return query.ToPagedList(pageSize, pageNumber, selector);
         }
 
         public IPagedList<TEntity> GetAllPaged(
@@ -110,8 +141,9 @@ namespace Core.DataAccess.EntityFramework
                 : query.ToList();
         }
 
-        public IList<TEntity> GetAll<TResult>(Expression<Func<TEntity, bool>> predicate = null,
-            Expression<Func<TEntity, TResult>> selector = null,
+        public IList<TEntity> GetAll<TResult>(
+            Expression<Func<TEntity, TResult>> selector,
+            Expression<Func<TEntity, bool>> predicate = null,
             Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
             Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> include = null,
             bool enableTracking = true,
@@ -173,11 +205,13 @@ namespace Core.DataAccess.EntityFramework
             return _dbContext.SaveChanges();
         }
 
-        public (TEntity old, TEntity @new) Update(TEntity entity)
+        public TEntity Update(TEntity entity)
         {
-            var entityToUpdate = _dbSet.Update(entity).Entity;
+            var state1 = _dbContext.Attach(entity).State;
+            _dbContext.Attach(entity).State = EntityState.Modified;
+            var state = _dbContext.Attach(entity).State;
             _dbContext.SaveChanges();
-            return (entity, entityToUpdate);
+            return entity;
         }
 
         public int Update(params TEntity[] entities)

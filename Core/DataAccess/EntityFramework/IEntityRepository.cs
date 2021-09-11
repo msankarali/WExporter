@@ -1,14 +1,12 @@
-﻿using Core.Entities.Abstract;
-using Core.Entities.PagedList;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
+using Core.Entities.Abstract;
+using Core.Entities.PagedList;
+using Microsoft.EntityFrameworkCore.Query;
 
-namespace Core.DataAccess
+namespace Core.DataAccess.EntityFramework
 {
     public interface IEntityRepository<TEntity>
         where TEntity : class, IEntity, new()
@@ -18,16 +16,26 @@ namespace Core.DataAccess
             Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> include = null,
             bool enableTracking = true,
             bool ignoreQueryFilters = false);
-        TEntity Get<TResult>(
+        TResult Get<TResult>(
+            Expression<Func<TEntity, TResult>> selector,
             Expression<Func<TEntity, bool>> predicate = null,
-            Expression<Func<TEntity, TResult>> selector = null,
             Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> include = null,
             bool enableTracking = true,
             bool ignoreQueryFilters = false);
 
-        IPagedList<TEntity> GetAllPaged<TResult>(
+        TEntity Get(ISpecification<TEntity> specification = null);
+        TResult Get<TResult>(
+            Expression<Func<TEntity, TResult>> selector,
+            ISpecification<TEntity> specification = null);
+
+        IPagedList<TEntity> GetAllPaged(ISpecification<TEntity> specification);
+        IPagedList<TResult> GetAllPaged<TResult>(
+            Expression<Func<TEntity, TResult>> selector,
+            ISpecification<TEntity> specification = null);
+
+        IPagedList<TResult> GetAllPaged<TResult>(
+            Expression<Func<TEntity, TResult>> selector,
             Expression<Func<TEntity, bool>> predicate = null,
-            Expression<Func<TEntity, TResult>> selector = null,
             Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
             Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> include = null,
             bool enableTracking = true,
@@ -55,8 +63,8 @@ namespace Core.DataAccess
             );
 
         IList<TEntity> GetAll<TResult>(
+            Expression<Func<TEntity, TResult>> selector,
             Expression<Func<TEntity, bool>> predicate = null,
-            Expression<Func<TEntity, TResult>> selector = null,
             Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
             Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> include = null,
             bool enableTracking = true,
@@ -67,7 +75,7 @@ namespace Core.DataAccess
         int Add(params TEntity[] entities);
         int Add(IEnumerable<TEntity> entities);
 
-        (TEntity old, TEntity @new) Update(TEntity entity);
+        TEntity Update(TEntity entity);
         int Update(params TEntity[] entities);
         int Update(IEnumerable<TEntity> entities);
 
