@@ -5,9 +5,8 @@ using System.Text;
 
 namespace WExporter.Entities.Concrete
 {
-    public class Role : BaseEntity
+    public class Role : BaseEntity<int>
     {
-        public int Id { get; set; }
         public string Name { get; set; }
     }
 }

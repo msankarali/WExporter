@@ -6,12 +6,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Core.DataAccess.EntityFramework
 {
-    internal class SpecificationEvaluator<TEntity>
-        where TEntity : class, IEntity
+    internal class SpecificationEvaluator<TEntity, TId>
+        where TEntity : class, IEntity<TId>
     {
-        public static SpecificationEvaluator<TEntity> CreateInstance()
+        public static SpecificationEvaluator<TEntity, TId> CreateInstance()
         {
-            return new SpecificationEvaluator<TEntity>();
+            return new SpecificationEvaluator<TEntity, TId>();
         }
 
         public static IQueryable<TEntity> GetQuery(IQueryable<TEntity> query, ISpecification<TEntity> specification)

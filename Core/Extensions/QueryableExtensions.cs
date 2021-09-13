@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Core.Extensions
 {
-    public static class EnumerableExtensions
+    public static class QueryableExtensions
     {
         public static IQueryable<TSource> WhereIf<TSource>(this IQueryable<TSource> source, bool condition, Func<TSource, bool> predicate)
         {

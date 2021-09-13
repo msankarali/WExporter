@@ -3,15 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31613.86
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{100048B0-E7D4-4E73-A59C-4B82261AC8D3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "Core\Core.csproj", "{100048B0-E7D4-4E73-A59C-4B82261AC8D3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WExporter.Entities", "WExporter.Entities\WExporter.Entities.csproj", "{33EBF4D7-D30F-453C-AB12-49DBC3969EC8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WExporter.Entities", "WExporter.Entities\WExporter.Entities.csproj", "{33EBF4D7-D30F-453C-AB12-49DBC3969EC8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WExporter.DataAccess", "WExporter.DataAccess\WExporter.DataAccess.csproj", "{E22EF4E8-F699-49CD-850D-B7877E3CF4A8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WExporter.DataAccess", "WExporter.DataAccess\WExporter.DataAccess.csproj", "{E22EF4E8-F699-49CD-850D-B7877E3CF4A8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WExporter.Business", "WExporter.Business\WExporter.Business.csproj", "{47E9D6F7-9042-425C-BCA3-FE41CCBFC3D9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WExporter.Business", "WExporter.Business\WExporter.Business.csproj", "{47E9D6F7-9042-425C-BCA3-FE41CCBFC3D9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{6357059B-69AD-4697-96CB-694B9207EFA7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test", "Test\Test.csproj", "{6357059B-69AD-4697-96CB-694B9207EFA7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mvc", "Mvc\Mvc.csproj", "{A6888F27-9F23-4B1C-AB11-B01AAD0D4CFB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{DED39AA9-D12B-4D76-98DE-E3A3737146CD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +43,14 @@ Global
 		{6357059B-69AD-4697-96CB-694B9207EFA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6357059B-69AD-4697-96CB-694B9207EFA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6357059B-69AD-4697-96CB-694B9207EFA7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6888F27-9F23-4B1C-AB11-B01AAD0D4CFB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6888F27-9F23-4B1C-AB11-B01AAD0D4CFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6888F27-9F23-4B1C-AB11-B01AAD0D4CFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6888F27-9F23-4B1C-AB11-B01AAD0D4CFB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DED39AA9-D12B-4D76-98DE-E3A3737146CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DED39AA9-D12B-4D76-98DE-E3A3737146CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DED39AA9-D12B-4D76-98DE-E3A3737146CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DED39AA9-D12B-4D76-98DE-E3A3737146CD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

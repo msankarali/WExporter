@@ -19,7 +19,7 @@ namespace Core.Utilities.Results
 
         public IResult AddMessage(string message)
         {
-            if (Messages == null) Messages = new List<string>();
+            Messages ??= new List<string>();
             Messages.Add(message);
             return this;
         }

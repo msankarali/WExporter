@@ -8,28 +8,28 @@ using Microsoft.EntityFrameworkCore.Query;
 
 namespace Core.DataAccess.EntityFramework
 {
-    public interface IEntityRepository<TEntity>
-        where TEntity : class, IEntity, new()
+    public interface IEntityRepository<TEntity, TId>
+        where TEntity : class, IEntity<TId>
     {
-        TEntity Get(
+        TEntity GetFirst(
             Expression<Func<TEntity, bool>> predicate = null,
             Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> include = null,
             bool enableTracking = true,
             bool ignoreQueryFilters = false);
-        TResult Get<TResult>(
+        TResult GetSelect<TResult>(
             Expression<Func<TEntity, TResult>> selector,
             Expression<Func<TEntity, bool>> predicate = null,
             Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> include = null,
             bool enableTracking = true,
             bool ignoreQueryFilters = false);
 
-        TEntity Get(ISpecification<TEntity> specification = null);
-        TResult Get<TResult>(
+        TEntity GetSpec(ISpecification<TEntity> specification = null);
+        TResult GetSelectSpec<TResult>(
             Expression<Func<TEntity, TResult>> selector,
             ISpecification<TEntity> specification = null);
 
-        IPagedList<TEntity> GetAllPaged(ISpecification<TEntity> specification);
-        IPagedList<TResult> GetAllPaged<TResult>(
+        IPagedList<TEntity> GetAllPagedSpec(ISpecification<TEntity> specification);
+        IPagedList<TResult> GetAllPagedSelectSpec<TResult>(
             Expression<Func<TEntity, TResult>> selector,
             ISpecification<TEntity> specification = null);
 
@@ -54,7 +54,7 @@ namespace Core.DataAccess.EntityFramework
             int pageSize = 20
             );
 
-        IList<TEntity> GetAll(
+        IReadOnlyList<TEntity> GetAll(
             Expression<Func<TEntity, bool>> predicate = null,
             Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
             Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> include = null,
@@ -62,7 +62,7 @@ namespace Core.DataAccess.EntityFramework
             bool ignoreQueryFilters = false
             );
 
-        IList<TEntity> GetAll<TResult>(
+        IReadOnlyList<TEntity> GetAllSelect<TResult>(
             Expression<Func<TEntity, TResult>> selector,
             Expression<Func<TEntity, bool>> predicate = null,
             Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,

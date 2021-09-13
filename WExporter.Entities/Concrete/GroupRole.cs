@@ -2,7 +2,7 @@
 
 namespace WExporter.Entities.Concrete
 {
-    public class GroupRole : BaseEntity
+    public class GroupRole : BaseEntity<int>
     {
         public int GroupId { get; set; }
         public virtual Group Group { get; set; }

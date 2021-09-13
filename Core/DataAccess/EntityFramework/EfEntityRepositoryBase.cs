@@ -11,9 +11,8 @@ using Microsoft.EntityFrameworkCore.Query.Internal;
 
 namespace Core.DataAccess.EntityFramework
 {
-    public class EfEntityRepositoryBase<TEntity, TDbContext> : IEntityRepository<TEntity>
-        where TEntity : class, IEntity, new()
-        where TDbContext : DbContext
+    public class EfEntityRepositoryBase<TEntity, TId> : IEntityRepository<TEntity, TId>
+        where TEntity : class, IEntity<TId>
     {
         private readonly DbContext _dbContext;
         private readonly DbSet<TEntity> _dbSet;
@@ -24,7 +23,7 @@ namespace Core.DataAccess.EntityFramework
             _dbSet = _dbContext.Set<TEntity>();
         }
 
-        public TEntity Get(
+        public TEntity GetFirst(
             Expression<Func<TEntity, bool>> predicate = null,
             Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> include = null,
             bool ignoreQueryFilters = false,
@@ -38,7 +37,7 @@ namespace Core.DataAccess.EntityFramework
             return query.FirstOrDefault();
         }
 
-        public TResult Get<TResult>(
+        public TResult GetSelect<TResult>(
             Expression<Func<TEntity, TResult>> selector,
             Expression<Func<TEntity, bool>> predicate = null,
             Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> include = null,
@@ -55,35 +54,34 @@ namespace Core.DataAccess.EntityFramework
             return entity;
         }
 
-        public TEntity Get(ISpecification<TEntity> specification = null)
+        public TEntity GetSpec(ISpecification<TEntity> specification = null)
         {
-            return SpecificationEvaluator<TEntity>.GetQuery(_dbContext.Set<TEntity>().AsQueryable(), specification).FirstOrDefault();
+            return SpecificationEvaluator<TEntity, TId>.GetQuery(_dbContext.Set<TEntity>().AsQueryable(), specification).FirstOrDefault();
         }
 
-        public TResult Get<TResult>(Expression<Func<TEntity, TResult>> selector, ISpecification<TEntity> specification = null)
+        public TResult GetSelectSpec<TResult>(
+            Expression<Func<TEntity, TResult>> selector,
+            ISpecification<TEntity> specification = null)
         {
-            return SpecificationEvaluator<TEntity>.GetQuery(selector, _dbContext.Set<TEntity>().AsQueryable(), specification).FirstOrDefault();
+            return SpecificationEvaluator<TEntity, TId>.GetQuery(selector, _dbContext.Set<TEntity>().AsQueryable(), specification).FirstOrDefault();
         }
 
-        public IPagedList<TEntity> GetAllPaged(ISpecification<TEntity> specification)
+        public IPagedList<TEntity> GetAllPagedSpec(ISpecification<TEntity> specification)
         {
-            return SpecificationEvaluator<TEntity>.GetQuery(_dbContext.Set<TEntity>().AsQueryable(), specification)
+            return SpecificationEvaluator<TEntity, TId>.GetQuery(_dbContext.Set<TEntity>().AsQueryable(), specification)
                 .ToPagedList(
                     specification.Configuration.PageSize,
                     specification.Configuration.PageNumber);
         }
 
-        public IPagedList<TResult> GetAllPaged<TResult>(Expression<Func<TEntity, TResult>> selector, ISpecification<TEntity> specification = null)
+        public IPagedList<TResult> GetAllPagedSelectSpec<TResult>(
+            Expression<Func<TEntity, TResult>> selector,
+            ISpecification<TEntity> specification = null)
         {
-            return SpecificationEvaluator<TEntity>.GetQuery(selector, _dbContext.Set<TEntity>().AsQueryable(), specification)
+            return SpecificationEvaluator<TEntity, TId>.GetQuery(selector, _dbContext.Set<TEntity>().AsQueryable(), specification)
                 .ToPagedList(
                     specification.Configuration.PageSize,
                     specification.Configuration.PageNumber);
-        }
-
-        private IQueryable<TEntity> ApplySpecification(ISpecification<TEntity> spec)
-        {
-            return SpecificationEvaluator<TEntity>.GetQuery(_dbContext.Set<TEntity>().AsQueryable(), spec);
         }
 
         public IPagedList<TResult> GetAllPaged<TResult>(
@@ -124,7 +122,7 @@ namespace Core.DataAccess.EntityFramework
                 : query.ToPagedList(pageSize, pageNumber);
         }
 
-        public IList<TEntity> GetAll(
+        public IReadOnlyList<TEntity> GetAll(
             Expression<Func<TEntity, bool>> predicate = null,
             Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
             Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> include = null,
@@ -141,7 +139,7 @@ namespace Core.DataAccess.EntityFramework
                 : query.ToList();
         }
 
-        public IList<TEntity> GetAll<TResult>(
+        public IReadOnlyList<TEntity> GetAllSelect<TResult>(
             Expression<Func<TEntity, TResult>> selector,
             Expression<Func<TEntity, bool>> predicate = null,
             Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
@@ -162,20 +160,21 @@ namespace Core.DataAccess.EntityFramework
 
         public TEntity Delete(TEntity entity)
         {
-            var entityToDelete = _dbSet.Remove(entity).Entity;
+            _dbContext.Entry(entity).State = EntityState.Deleted;
             _dbContext.SaveChanges();
-            return entityToDelete;
+            return entity;
         }
 
         public int Delete(params TEntity[] entities)
         {
-            _dbSet.RemoveRange(entities);
+
+            _dbContext.Entry(entities).State = EntityState.Deleted;
             return _dbContext.SaveChanges();
         }
 
         public int Delete(IEnumerable<TEntity> entities)
         {
-            _dbSet.RemoveRange(entities);
+            _dbContext.Entry(entities).State = EntityState.Deleted;
             return _dbContext.SaveChanges();
         }
 
@@ -188,41 +187,39 @@ namespace Core.DataAccess.EntityFramework
 
         public TEntity Add(TEntity entity)
         {
-            var entityToAdd = _dbSet.Add(entity).Entity;
+            _dbContext.Entry(entity).State = EntityState.Added;
             _dbContext.SaveChanges();
-            return entityToAdd;
+            return entity;
         }
 
         public int Add(params TEntity[] entities)
         {
-            _dbSet.AddRange(entities);
+            _dbContext.Entry(entities).State = EntityState.Added;
             return _dbContext.SaveChanges();
         }
 
         public int Add(IEnumerable<TEntity> entities)
         {
-            _dbSet.AddRange(entities);
+            _dbContext.Entry(entities).State = EntityState.Added;
             return _dbContext.SaveChanges();
         }
 
         public TEntity Update(TEntity entity)
         {
-            var state1 = _dbContext.Attach(entity).State;
-            _dbContext.Attach(entity).State = EntityState.Modified;
-            var state = _dbContext.Attach(entity).State;
+            _dbContext.Entry(entity).State = EntityState.Modified;
             _dbContext.SaveChanges();
             return entity;
-        }
+         }
 
         public int Update(params TEntity[] entities)
         {
-            _dbSet.UpdateRange(entities);
+            _dbContext.Entry(entities).State = EntityState.Modified;
             return _dbContext.SaveChanges();
         }
 
         public int Update(IEnumerable<TEntity> entities)
         {
-            _dbSet.UpdateRange(entities);
+            _dbContext.Entry(entities).State = EntityState.Modified;
             return _dbContext.SaveChanges();
         }
 

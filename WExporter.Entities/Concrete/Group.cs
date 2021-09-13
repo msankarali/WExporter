@@ -5,9 +5,8 @@ using System.Text;
 
 namespace WExporter.Entities.Concrete
 {
-    public class Group : BaseDelibleEntity
+    public class Group : BaseDelibleEntity<int>
     {
-        public int Id { get; set; }
         public string Name { get; set; }
     }
 }

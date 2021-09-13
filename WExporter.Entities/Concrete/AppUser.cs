@@ -2,9 +2,8 @@
 
 namespace WExporter.Entities.Concrete
 {
-    public class AppUser : BaseStateEntity
+    public class AppUser : BaseStateEntity<int>
     {
-        public int Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Email { get; set; }

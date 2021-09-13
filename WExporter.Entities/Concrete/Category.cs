@@ -2,9 +2,8 @@
 
 namespace WExporter.Entities.Concrete
 {
-    public class Category : BaseActivatableEntity
+    public class Category : BaseActivatableEntity<int>
     {
-        public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
     }
