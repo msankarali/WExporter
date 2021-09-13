@@ -39,73 +39,22 @@ namespace Core.DataAccess.Dapper
 
         public T Add<T>(string query, object @params = null)
         {
-            T result;
             using IDbConnection db = new SqlConnection(_connectionString);
-            try
-            {
-                if (db.State == ConnectionState.Closed)
-                    db.Open();
-
-                using var tran = db.BeginTransaction();
-                try
-                {
-                    result = db.Query<T>(query, @params, transaction: tran).FirstOrDefault();
-                    tran.Commit();
-                }
-                catch (Exception ex)
-                {
-                    tran.Rollback();
-                    throw ex;
-                }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            finally
-            {
-                if (db.State == ConnectionState.Open)
-                    db.Close();
-            }
-
+            var result = db.Query<T>(query, @params).FirstOrDefault();
             return result;
         }
 
         public T Update<T>(string query, object @params = null)
         {
-            T result;
             using IDbConnection db = new SqlConnection(_connectionString);
-            try
-            {
-                using var tran = db.BeginTransaction();
-                try
-                {
-                    result = db.Query<T>(query, @params, commandType: CommandType.Text, transaction: tran).FirstOrDefault();
-                    tran.Commit();
-                }
-                catch (Exception ex)
-                {
-                    tran.Rollback();
-                    throw ex;
-                }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            finally
-            {
-                if (db.State == ConnectionState.Open)
-                    db.Close();
-            }
-
+            var result = db.Query<T>(query, @params, commandType: CommandType.Text).FirstOrDefault();
             return result;
         }
 
-        public List<T> Query<T>(string query, object parms = null)
+        public List<T> Query<T>(string query, object @params = null)
         {
             using IDbConnection db = new SqlConnection(_connectionString);
-            return db.Query<T>(query, parms, commandType: CommandType.Text).ToList();
+            return db.Query<T>(query, @params, commandType: CommandType.Text).ToList();
         }
     }
 }
